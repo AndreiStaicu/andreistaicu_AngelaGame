@@ -1,5 +1,6 @@
 
   int numeroMetaScelto = 50;
+  int numeroMetaPARTITA;
   int numeroSceltoGiocatore;
   int numeroSceltoAngela;
   int somma = numeroSceltoGiocatore + numeroSceltoAngela;
@@ -14,57 +15,32 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  
-// ValoreSelezionabile();
+}
 
-if(turni == 1)
+//////////////////AREA METODI/////////////////
+
+void AumentaMeta()
 {
-  
-}
-
-}
-void Partita()
-{
-  
-}
-
- void AumentaMeta()
- {
-  if(numeroMetaScelto == 99)
+  if(numeroMetaScelto > 99)
   {
-    Serial.Print("Soglia massima raggunta")
+    Serial.write("Non oltrepassare la soglia massima consigliata di 99")
   }
   else
   {
     numeroMetaScelto++;
   }
- }
+}
 
- void DiminuisciMeta()
- {
-  if(numeroMetaScelto == 30)
-  {
-    Serial.Print("Soglia minima raggiunta")
-  }
-  else
-  {
-    numeroMetaScelto--;
-  }
- }
- 
-/*void ValoreSelezionabile()
+void RiduciMeta()
 {
-  switch (Giocata)
+  if(numeroMetaScelto < 30)
   {
-    case 0:
-    Giocatore = 1;
-    case 1 || 6:
-    break;
-    case 2 || 5:
-    break;
-    case 3 || 4:
+    Serial.write("Non oltrepassare la soglia minima consigliata di 30")
   }
 }
-*/
 
+void ControllaMeta()
+{
+  if(numeroMetaPARTITA 
+}
 

@@ -1,15 +1,14 @@
 #include <LiquidCrystal.h>
 
-  int numeroMetaScelto = 50;
+  int numeroMetaScelto;
   int numeroMetaPARTITA;
   int numeroSceltoGiocatore;
   int numeroSceltoAngela;
   int somma;
-  int CodiceTurno = 1;
-  int NumeroTurni = 1;
-  int PrimaGiocata[7] = {0,1,2,3,4,5,6};
-  int Giocate[4];
-  int Turni = 1;
+  int CodiceTurno;
+  int NumeroTurni;
+  int Turni;
+
   #define buttonMinus
   #define buttonOk
   #define buttonPlus
@@ -22,6 +21,17 @@ LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
   
 void setup() {
   // put your setup code here, to run once:
+
+  Serial.begin(9600);
+  int numeroMetaScelto = 50;
+  int numeroMetaPARTITA;
+  int numeroSceltoGiocatore;
+  int numeroSceltoAngela;
+  int somma;
+  int CodiceTurno = 1;
+  int NumeroTurni = 1;
+  int Turni = 1;
+  randomSeed(analogRead(0));
 
     // set up the LCD's number of columns and rows:
   lcd.begin(16, 2);
@@ -82,6 +92,18 @@ void AumentaMeta()
   else
   {
     numeroMetaScelto++;
+  }
+}
+
+void PassaTurno()
+{
+  if(CodiceTurno == 1)
+  {
+    CodiceTurno = 2;
+  }
+  else if(CodiceTurno == 2)
+  {
+    CodiceTurno = 1;
   }
 }
 

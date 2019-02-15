@@ -18,8 +18,20 @@
 
   const int rs = 8, en = 9, d4 = 10, d5 = 11, d6 = 12, d7 = 13;
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
-  
-void setup() {
+
+// "Firme" dei metodi
+
+void AumentaMeta();
+void RiduciMeta();
+int InizioPartita(); 
+void ControlloInput();
+void ControllaMeta();
+int InizioPartita();
+int TurnoGiocatore();
+
+
+void setup() 
+{
   // put your setup code here, to run once:
   lcd.begin(16, 2);
   lcd.print("Angela Game");
@@ -38,64 +50,47 @@ void setup() {
   
 }
 
-void loop() {
+void loop() 
+{
   // put your main code here, to run repeatedly:
   // Turn off the display:
 
-  
-  if(CodiceTurno == 0 && somma <= numeroMetaPARTITA)
+
+
+  if(CodiceTurno == 0 && somma <= numeroMetaPARTITA && blocco == 0)
   {
-    Serial.println("Programma di svago -Angela Game- inizializzato");
+    Serial.println("Programma di svago -Angela Game- inizializzato");      
+    blocco = 1;
     InizioPartita();
-    Serial.println("Turno dell'Utente");
-    Serial.println("Scegliere una cifra da 0 a 6");
-    while (Serial.available() > 0) 
-    {
-      String InputGiocatore = Serial.readString();
-
-      if (InputGiocatore.toInt() >= 1 && InputGiocatore.toInt() <= 6) 
-      {
-        numeroSceltoGiocatore = InputGiocatore.toInt();
-        Serial.print("Numero scelto  ->  ");
-        Serial.println(numeroSceltoGiocatore);
-        somma = somma + numeroSceltoGiocatore; 
-        ControllaMeta();
-        CodiceTurno = 2;
-        NumeroTurni++;
-      }
-      else if(InputGiocatore.toInt() == 0 && blocco == 0)
-      {
-        Serial.println("Il numero 0 si può applicare solo un volta il PRIMO turno");
-        numeroSceltoGiocatore = InputGiocatore.toInt();
-        Serial.print("Numero scelto  ->  ");
-        Serial.println(numeroSceltoGiocatore);
-        somma = somma + numeroSceltoGiocatore; 
-        ControllaMeta();
-        CodiceTurno = 2;
-        NumeroTurni++;
-        blocco = 1;
-      }
-      else
-      {
-        Serial.println("Numero della meta non corretto");
-      }
-    }
-
-    {
-      Serial.println("Selezionare un numero tra 0 per il primo turno,oppure tra 1 e 6");
-    }
   }
-
-  if(CodiceTurno == 2 && somma < numeroMetaPARTITA)
+  CodiceTurno = 1;
+  Serial.println("Turno dell'Utente");
+  
+  if(CodiceTurno == 1 || blocco == 0)
+  {
+    TurnoGiocatore();
+    CodiceTurno = 2;
+  }
+    
+  if(CodiceTurno == 2 )
   {
       Serial.println("Turno di Angela");
       numeroSceltoAngela = random(1, 7);
-      CodiceTurno = 1;
+      Serial.print("Numero scelto  ->  ");
+      Serial.println(numeroSceltoAngela);   
+      somma = somma + numeroSceltoAngela;
+      Serial.print("SOMMA TOTALE  ->  "); 
+      Serial.println(somma);
+      Serial.print("META  ->  ");
+      Serial.println(numeroMetaPARTITA); 
       NumeroTurni++;
-      ControllaMeta();
+      CodiceTurno = 1;
+      ControllaMeta();      
   }
-
+  
 }
+
+
 
 //////////////////AREA METODI/////////////////
 
@@ -117,42 +112,110 @@ void RiduciMeta()
   {
     Serial.write("Non oltrepassare la soglia minima consigliata di 30");
   }
+  else
+  {
+    numeroMetaScelto--;
+  }
 }
 
-int InizioPartita()
-{  
-  Serial.print("Immettere la meta preferita da 30 a 99");
-  while (Serial.available() > 0) 
+int TurnoGiocatore()
+{
+  blocco = 0;
+  Serial.println("Scegliere una cifra da 0 a 6");
+  while (Serial.available() == 0) 
+    {
+      String InputGiocatore = Serial.readString();
+      
+      if(InputGiocatore == "")
+      {
+      
+      }
+      else
+      {
+        if (InputGiocatore.toInt() >= 1 && InputGiocatore.toInt() <= 6) 
+        {
+        numeroSceltoGiocatore = InputGiocatore.toInt();
+        Serial.print("Numero scelto  ->  ");
+        Serial.println(numeroSceltoGiocatore);   
+        somma = somma + numeroSceltoGiocatore;
+        Serial.print("SOMMA TOTALE  ->  "); 
+        Serial.println(somma);
+        Serial.print("META  ->  ");
+        Serial.println(numeroMetaPARTITA);         
+        return numeroSceltoGiocatore;
+        CodiceTurno = 2;
+        NumeroTurni++;
+        ControllaMeta();        
+
+        }
+      else if(InputGiocatore.toInt() == 0 && blocco == 0)
+      {
+        Serial.println("Il numero 0 si può applicare solo un volta il PRIMO turno");
+        numeroSceltoGiocatore = InputGiocatore.toInt();
+        Serial.print("Numero scelto  ->  ");
+        Serial.println(numeroSceltoGiocatore);       
+        somma = somma + numeroSceltoGiocatore; 
+        Serial.print("SOMMA TOTALE  ->  "); 
+        Serial.println(somma);
+        Serial.print("META  ->  ");
+        Serial.println(numeroMetaPARTITA);
+        CodiceTurno = 2;
+        NumeroTurni++;
+        return numeroSceltoGiocatore;
+        blocco = 1;
+        ControllaMeta();
+      }
+      else
+      {
+        Serial.println("Selezionare un numero tra 0 per il primo turno,oppure tra 1 e 6");
+      }
+    }
+}
+
+}
+
+int InizioPartita(){
+ 
+  Serial.println("Immettere la meta preferita da 30 a 99");
+  while (Serial.available() == 0) 
   {
     String InputMeta = Serial.readString();
 
-    if (InputMeta.toInt() >= 30 && InputMeta.toInt() <= 99) 
+    if(InputMeta == "")
     {
-      numeroMetaPARTITA = InputMeta.toInt();
-      Serial.print("Punti Meta  :  ");
-      Serial.println(numeroMetaPARTITA);
+      
     }
-    else 
+    else
     {
-      Serial.println("Numero della meta non corretto");
+      if (InputMeta.toInt() >= 30 && InputMeta.toInt() <= 99) 
+      {
+        numeroMetaPARTITA = InputMeta.toInt();
+        Serial.print("Punti Meta  :  ");
+        Serial.println(numeroMetaPARTITA);
+        return numeroMetaPARTITA;
+        blocco = 0;
+      }
+      else if(InputMeta.toInt() > 99)
+      {
+        Serial.println("Non oltrepassare la soglia massima consigliata di 99");
+      }
+      else if(InputMeta.toInt() < 30)
+      {
+        Serial.println("Non oltrepassare la soglia minima consigliata di 30");
+      } 
     }
 
   }
-
-  if(numeroMetaPARTITA > 99)
-  {
-    Serial.println("Non oltrepassare la soglia massima consigliata di 99");
-  }
-  else if(numeroMetaPARTITA < 30)
-  {
-    Serial.println("Non oltrepassare la soglia minima consigliata di 30");
-  }
+}
+  
+/*
   else
   {
     return numeroMetaPARTITA;
   }
-  
-}
+*/
+
+
 
 
 void ControlloInput() 
@@ -187,23 +250,36 @@ void ControllaMeta()
 {
   if(somma > numeroMetaPARTITA && CodiceTurno == 1)
   {
-    Serial.print("Hai Perso - La meta è stata oltrepassata dall'Utente");
+    Serial.println("Hai Perso - La meta è stata oltrepassata dall'Utente");
+    numeroMetaPARTITA = 0;
     CodiceTurno = 0;
+    blocco = 0;
   }
   else if(somma > numeroMetaPARTITA && CodiceTurno == 2)
   {
-    Serial.print("Hai Vinto - La meta è stata oltrepassata da Angela");
+    Serial.println("Hai Vinto - La meta è stata oltrepassata da Angela");
+    numeroMetaPARTITA = 0;
     CodiceTurno = 0;
+    blocco = 0;
   }
   else if(somma == numeroMetaPARTITA && CodiceTurno == 1)
   {
-    Serial.print("Hai Vinto - Hai raggiunto la meta prima di Angela");
+    Serial.println("Hai Vinto - Hai raggiunto la meta prima di Angela");
+    numeroMetaPARTITA = 0;
     CodiceTurno = 0;
+    blocco = 0;
   }
     else if(somma == numeroMetaPARTITA && CodiceTurno == 2)
   {
-    Serial.print("Hai Perso - Angela ha ragginto la meta per prima");
+    Serial.println("Hai Perso - Angela ha ragginto la meta per prima");
+    numeroMetaPARTITA = 0;
     CodiceTurno = 0;
+    blocco = 0;
   }
+  else
+  {
+    
+  }
+
 }
 

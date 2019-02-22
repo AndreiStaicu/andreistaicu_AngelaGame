@@ -63,6 +63,7 @@ void loop()
     blocco = 1;
     InizioPartita();
   }
+  
   CodiceTurno = 1;
   Serial.println("Turno dell'Utente");
   
@@ -125,11 +126,8 @@ int TurnoGiocatore()
   while (Serial.available() == 0) 
     {
       String InputGiocatore = Serial.readString();
-      
       if(InputGiocatore == "")
-      {
-      
-      }
+      {}
       else
       {
         if (InputGiocatore.toInt() >= 1 && InputGiocatore.toInt() <= 6) 
@@ -143,48 +141,46 @@ int TurnoGiocatore()
         Serial.print("META  ->  ");
         Serial.println(numeroMetaPARTITA);         
         return numeroSceltoGiocatore;
+        ControllaMeta();        
         CodiceTurno = 2;
         NumeroTurni++;
-        ControllaMeta();        
+      
+        }
+        else if(InputGiocatore.toInt() == 0 && blocco == 0)
+        {
+          blocco = 1;
+          Serial.println("Il numero 0 si può applicare solo un volta il PRIMO turno");
+          numeroSceltoGiocatore = InputGiocatore.toInt();
+          Serial.print("Numero scelto  ->  ");
+          Serial.println(numeroSceltoGiocatore);       
+          somma = somma + numeroSceltoGiocatore; 
+          Serial.print("SOMMA TOTALE  ->  "); 
+          Serial.println(somma);
+          Serial.print("META  ->  ");
+          Serial.println(numeroMetaPARTITA);
+          ControllaMeta();          
+          CodiceTurno = 2;
+          NumeroTurni++;
+          return numeroSceltoGiocatore;
 
         }
-      else if(InputGiocatore.toInt() == 0 && blocco == 0)
-      {
-        Serial.println("Il numero 0 si può applicare solo un volta il PRIMO turno");
-        numeroSceltoGiocatore = InputGiocatore.toInt();
-        Serial.print("Numero scelto  ->  ");
-        Serial.println(numeroSceltoGiocatore);       
-        somma = somma + numeroSceltoGiocatore; 
-        Serial.print("SOMMA TOTALE  ->  "); 
-        Serial.println(somma);
-        Serial.print("META  ->  ");
-        Serial.println(numeroMetaPARTITA);
-        CodiceTurno = 2;
-        NumeroTurni++;
-        return numeroSceltoGiocatore;
-        blocco = 1;
-        ControllaMeta();
+        else
+        {
+          Serial.println("Selezionare un numero tra 0 per il primo turno,oppure tra 1 e 6");
+        }
       }
-      else
-      {
-        Serial.println("Selezionare un numero tra 0 per il primo turno,oppure tra 1 e 6");
-      }
-    }
+   }
 }
 
-}
-
-int InizioPartita(){
- 
+int InizioPartita()
+{
   Serial.println("Immettere la meta preferita da 30 a 99");
   while (Serial.available() == 0) 
   {
     String InputMeta = Serial.readString();
 
     if(InputMeta == "")
-    {
-      
-    }
+    {}
     else
     {
       if (InputMeta.toInt() >= 30 && InputMeta.toInt() <= 99) 
@@ -202,9 +198,12 @@ int InizioPartita(){
       else if(InputMeta.toInt() < 30)
       {
         Serial.println("Non oltrepassare la soglia minima consigliata di 30");
-      } 
-    }
-
+      }
+      else    //if(InputMeta == "") + altri caratteri
+      {
+        Serial.println("Immettere un valore in cifre tra 30 e 99. Non altri caratteri.");
+      }
+  }
   }
 }
   

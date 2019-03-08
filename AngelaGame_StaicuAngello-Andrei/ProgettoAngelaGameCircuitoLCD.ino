@@ -9,6 +9,12 @@
   int NumeroTurni;
   int controllo;
   int blocco;
+  #define buttonMinus
+  #define buttonOk
+  #define buttonPlus
+  #define ledMinus
+  #define ledOk
+  #define ledPlus
 
   const int rs = 8, en = 9, d4 = 10, d5 = 11, d6 = 12, d7 = 13;
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
@@ -27,6 +33,8 @@ int TurnoGiocatore();
 void setup() 
 {
   // put your setup code here, to run once:
+  lcd.begin(16, 2);
+  lcd.print("Angela Game");
   
     Serial.begin(9600);
     numeroMetaScelto = 50;
@@ -39,19 +47,30 @@ void setup()
     controllo = 0;
     randomSeed(analogRead(0));
     blocco = 0;
-  
+
+    pinMode(4, INPUT); //VERDE
+    pinMode(3, INPUT); //BIANCO
+    pinMode(2, INPUT); //ROSSO
+    
+   // pinMode(A5, INPUT); //START
+    
+    /*pinMode(2, OUTPUT); //BIANCO
+    pinMode(3, OUTPUT); //VERDE
+    pinMode(4, OUTPUT); //ROSSO*/
+    
+    digitalWrite(7, LOW); //VERDE
+    digitalWrite(6, LOW); //BIANCO
+    digitalWrite(5, LOW); //ROSSO
+    
 }
 
 void loop() 
 {
-  // put your main code here, to run repeatedly:
-  // Turn off the display:
-
-
-
+  // put your main code here, to run repeatedly
+  
   if(CodiceTurno == 0 && somma <= numeroMetaPARTITA && blocco == 0)
   {
-    Serial.println("Programma di svago -Angela Game- inizializzato");      
+    lcd.print("Programma inizializzato");      
     blocco = 1;
     InizioPartita();
   }
@@ -166,10 +185,10 @@ int TurnoGiocatore()
 
 int InizioPartita()
 {
-  Serial.println("Immettere la meta preferita da 30 a 99");
+  lcd.print("Meta da 30 a 99");
   while (Serial.available() == 0) 
   {
-    String InputMeta = Serial.readString();
+    String InputMeta = lcd.read();
 
     if(InputMeta == "")
     {}
@@ -178,14 +197,14 @@ int InizioPartita()
       if (InputMeta.toInt() >= 30 && InputMeta.toInt() <= 99) 
       {
         numeroMetaPARTITA = InputMeta.toInt();
-        Serial.print("Punti Meta  :  ");
-        Serial.println(numeroMetaPARTITA);
+        lcd.print("Punti Meta  :  ");
+        lcd.println(numeroMetaPARTITA);
         return numeroMetaPARTITA;
         blocco = 0;
       }
       else if(InputMeta.toInt() > 99)
       {
-        Serial.println("Non oltrepassare la soglia massima consigliata di 99");
+        Serial.println("Soglia troppo alta");
       }
       else if(InputMeta.toInt() < 30)
       {

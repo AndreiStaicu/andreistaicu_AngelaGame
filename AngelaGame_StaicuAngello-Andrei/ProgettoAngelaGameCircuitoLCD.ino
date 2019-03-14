@@ -76,7 +76,7 @@ void loop()
   }
   
   CodiceTurno = 1;
-  Serial.println("Turno dell'Utente");
+  lcd.print("Turno dell'Utente");
   
   if(CodiceTurno == 1 || blocco == 0)
   {
@@ -86,15 +86,15 @@ void loop()
     
   if(CodiceTurno == 2 )
   {
-      Serial.println("Turno di Angela");
+      lcd.print("Turno di Angela");
       numeroSceltoAngela = random(1, 7);
-      Serial.print("Numero scelto  ->  ");
-      Serial.println(numeroSceltoAngela);   
+      lcd.print("Numero scelto  ->  ");
+      lcd.print(numeroSceltoAngela);   
       somma = somma + numeroSceltoAngela;
-      Serial.print("SOMMA TOTALE  ->  "); 
-      Serial.println(somma);
-      Serial.print("META  ->  ");
-      Serial.println(numeroMetaPARTITA); 
+      lcd.print("SOMMA TOTALE  ->  "); 
+      lcd.print(somma);
+      lcd.print("META  ->  ");
+      lcd.print(numeroMetaPARTITA); 
       NumeroTurni++;
       CodiceTurno = 1;
       ControllaMeta();      
@@ -110,7 +110,7 @@ void AumentaMeta()
 {
   if(numeroMetaPARTITA > 99)
   {
-    Serial.write("Non oltrepassare la soglia massima consigliata di 99");
+    lcd.print("Non oltrepassare la soglia massima consigliata di 99");
   }
   else
   {
@@ -122,7 +122,7 @@ void RiduciMeta()
 {
   if(numeroMetaPARTITA < 30)
   {
-    Serial.write("Non oltrepassare la soglia minima consigliata di 30");
+    lcd.print("Non oltrepassare la soglia minima consigliata di 30");
   }
   else
   {
@@ -133,10 +133,10 @@ void RiduciMeta()
 int TurnoGiocatore()
 {
   blocco = 0;
-  Serial.println("Scegliere una cifra da 0 a 6");
-  while (Serial.available() == 0) 
+  lcd.print("Scegliere una cifra da 0 a 6");
+  while (lcd.available() == 0) 
     {
-      String InputGiocatore = Serial.readString();
+      String InputGiocatore = lcd.readString();
       if(InputGiocatore == "")
       {}
       else
@@ -144,13 +144,13 @@ int TurnoGiocatore()
         if (InputGiocatore.toInt() >= 1 && InputGiocatore.toInt() <= 6) 
         {
         numeroSceltoGiocatore = InputGiocatore.toInt();
-        Serial.print("Numero scelto  ->  ");
-        Serial.println(numeroSceltoGiocatore);   
+        lcd.print("Numero scelto  ->  ");
+        lcd.print(numeroSceltoGiocatore);   
         somma = somma + numeroSceltoGiocatore;
-        Serial.print("SOMMA TOTALE  ->  "); 
-        Serial.println(somma);
-        Serial.print("META  ->  ");
-        Serial.println(numeroMetaPARTITA);         
+        lcd.print("SOMMA TOTALE  ->  "); 
+        lcd.print(somma);
+        lcd.print("META  ->  ");
+        lcd.print(numeroMetaPARTITA);         
         return numeroSceltoGiocatore;
         ControllaMeta();        
         CodiceTurno = 2;
@@ -160,15 +160,15 @@ int TurnoGiocatore()
         else if(InputGiocatore.toInt() == 0 && blocco == 0)
         {
           blocco = 1;
-          Serial.println("Il numero 0 si può applicare solo un volta il PRIMO turno");
+          lcd.print("Il numero 0 si può applicare solo un volta il PRIMO turno");
           numeroSceltoGiocatore = InputGiocatore.toInt();
-          Serial.print("Numero scelto  ->  ");
-          Serial.println(numeroSceltoGiocatore);       
+          lcd.print("Numero scelto  ->  ");
+          lcd.print(numeroSceltoGiocatore);       
           somma = somma + numeroSceltoGiocatore; 
-          Serial.print("SOMMA TOTALE  ->  "); 
-          Serial.println(somma);
-          Serial.print("META  ->  ");
-          Serial.println(numeroMetaPARTITA);
+          lcd.print("SOMMA TOTALE  ->  "); 
+          lcd.print(somma);
+          lcd.print("META  ->  ");
+          lcd.print(numeroMetaPARTITA);
           ControllaMeta();          
           CodiceTurno = 2;
           NumeroTurni++;
@@ -177,7 +177,7 @@ int TurnoGiocatore()
         }
         else
         {
-          Serial.println("Selezionare un numero tra 0 per il primo turno,oppure tra 1 e 6");
+          lcd.print("Selezionare un numero tra 0 per il primo turno,oppure tra 1 e 6");
         }
       }
    }
@@ -186,7 +186,7 @@ int TurnoGiocatore()
 int InizioPartita()
 {
   lcd.print("Meta da 30 a 99");
-  while (Serial.available() == 0) 
+  while (lcd.available() == 0) 
   {
     String InputMeta = lcd.read();
 
@@ -198,21 +198,21 @@ int InizioPartita()
       {
         numeroMetaPARTITA = InputMeta.toInt();
         lcd.print("Punti Meta  :  ");
-        lcd.println(numeroMetaPARTITA);
+        lcd.print(numeroMetaPARTITA);
         return numeroMetaPARTITA;
         blocco = 0;
       }
       else if(InputMeta.toInt() > 99)
       {
-        Serial.println("Soglia troppo alta");
+        lcd.print("Soglia troppo alta");
       }
       else if(InputMeta.toInt() < 30)
       {
-        Serial.println("Non oltrepassare la soglia minima consigliata di 30");
+        lcd.print("Non oltrepassare la soglia minima consigliata di 30");
       }
       else    //if(InputMeta == "") + altri caratteri
       {
-        Serial.println("Immettere un valore in cifre tra 30 e 99. Non altri caratteri.");
+        lcd.print("Immettere un valore in cifre tra 30 e 99. Non altri caratteri.");
       }
   }
   }
@@ -260,28 +260,28 @@ void ControllaMeta()
 {
   if(somma > numeroMetaPARTITA && CodiceTurno == 1)
   {
-    Serial.println("Hai Perso - La meta è stata oltrepassata dall'Utente");
+    lcd.print("Hai Perso - La meta è stata oltrepassata dall'Utente");
     numeroMetaPARTITA = 0;
     CodiceTurno = 0;
     blocco = 0;
   }
   else if(somma > numeroMetaPARTITA && CodiceTurno == 2)
   {
-    Serial.println("Hai Vinto - La meta è stata oltrepassata da Angela");
+    lcd.print("Hai Vinto - La meta è stata oltrepassata da Angela");
     numeroMetaPARTITA = 0;
     CodiceTurno = 0;
     blocco = 0;
   }
   else if(somma == numeroMetaPARTITA && CodiceTurno == 1)
   {
-    Serial.println("Hai Vinto - Hai raggiunto la meta prima di Angela");
+    lcd.print("Hai Vinto - Hai raggiunto la meta prima di Angela");
     numeroMetaPARTITA = 0;
     CodiceTurno = 0;
     blocco = 0;
   }
     else if(somma == numeroMetaPARTITA && CodiceTurno == 2)
   {
-    Serial.println("Hai Perso - Angela ha ragginto la meta per prima");
+    lcd.print("Hai Perso - Angela ha ragginto la meta per prima");
     numeroMetaPARTITA = 0;
     CodiceTurno = 0;
     blocco = 0;

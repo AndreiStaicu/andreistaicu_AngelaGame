@@ -9,6 +9,7 @@
   int NumeroTurni;
   int controllo;
   int blocco;
+  bool bottoneConferma;
   #define buttonMinus
   #define buttonOk
   #define buttonPlus
@@ -52,7 +53,8 @@ void setup()
     pinMode(3, INPUT); //BIANCO
     pinMode(2, INPUT); //ROSSO
     
-   // pinMode(A5, INPUT); //START
+    pinMode(A5, INPUT); //START
+    bottoneConferma = false;
     
     /*pinMode(2, OUTPUT); //BIANCO
     pinMode(3, OUTPUT); //VERDE
@@ -110,7 +112,7 @@ void AumentaMeta()
 {
   if(numeroMetaPARTITA > 99)
   {
-    lcd.print("Non oltrepassare la soglia massima consigliata di 99");
+    lcd.print("Non superare la soglia massima di 99");
   }
   else
   {
@@ -122,7 +124,7 @@ void RiduciMeta()
 {
   if(numeroMetaPARTITA < 30)
   {
-    lcd.print("Non oltrepassare la soglia minima consigliata di 30");
+    lcd.print("Non superare la soglia minima di 30");
   }
   else
   {
@@ -134,9 +136,9 @@ int TurnoGiocatore()
 {
   blocco = 0;
   lcd.print("Scegliere una cifra da 0 a 6");
-  while (lcd.available() == 0) 
-    {
-      String InputGiocatore = lcd.readString();
+  while (bottoneConferma == false)
+  {
+      String InputGiocatore = digitalre();
       if(InputGiocatore == "")
       {}
       else
@@ -292,4 +294,5 @@ void ControllaMeta()
   }
 
 }
+
 

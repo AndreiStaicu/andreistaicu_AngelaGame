@@ -3,13 +3,15 @@
   int numeroMetaScelto;
   int numeroMetaPARTITA;
   int numeroSceltoGiocatore;
-  int numeroSceltoAngela;
+  int numeroSceltoSecondo;
   int somma;
   int CodiceTurno;
   int NumeroTurni;
   int controllo;
   int blocco;
   bool bottoneConferma;
+  //robe fatte da alessio
+  int arrrayMosse[100];
   #define buttonMinus
   #define buttonOk
   #define buttonPlus
@@ -39,27 +41,20 @@ void setup()
   
     Serial.begin(9600);
     numeroMetaScelto = 50;
-    numeroMetaPARTITA = 0;
-    numeroSceltoGiocatore = 0;
-    numeroSceltoAngela = 0;
+    numeroMetaPARTITA = 50;
+    numeroSceltoGiocatore = 3;
+    numeroSceltoSecondo = 3;
     somma = 0;
     CodiceTurno = 0;
     NumeroTurni = 1;
     controllo = 0;
     randomSeed(analogRead(0));
     blocco = 0;
-
-    pinMode(4, INPUT); //VERDE
-    pinMode(3, INPUT); //BIANCO
-    pinMode(2, INPUT); //ROSSO
-    
-    pinMode(A5, INPUT); //START
-    bottoneConferma = false;
-    
-    /*pinMode(2, OUTPUT); //BIANCO
-    pinMode(3, OUTPUT); //VERDE
-    pinMode(4, OUTPUT); //ROSSO*/
-    
+    //BOTTONI
+    pinMode(4, INPUT_PULLUP); //VERDE
+    pinMode(3, INPUT_PULLUP); //BIANCO
+    pinMode(2, INPUT_PULLUP); //ROSSO
+    //LED
     digitalWrite(7, LOW); //VERDE
     digitalWrite(6, LOW); //BIANCO
     digitalWrite(5, LOW); //ROSSO
@@ -72,34 +67,28 @@ void loop()
   
   if(CodiceTurno == 0 && somma <= numeroMetaPARTITA && blocco == 0)
   {
-    lcd.print("Programma inizializzato");      
+    lcd.print("AngelaGame inizializzato");
+    lcd.clear();      
     blocco = 1;
     InizioPartita();
   }
   
   CodiceTurno = 1;
+  lcd.setCursor(0,0);
   lcd.print("Turno dell'Utente");
   
   if(CodiceTurno == 1 || blocco == 0)
   {
     TurnoGiocatore();
+    ControllaMeta(); 
     CodiceTurno = 2;
   }
     
   if(CodiceTurno == 2 )
   {
-      lcd.print("Turno di Angela");
-      numeroSceltoAngela = random(1, 7);
-      lcd.print("Numero scelto  ->  ");
-      lcd.print(numeroSceltoAngela);   
-      somma = somma + numeroSceltoAngela;
-      lcd.print("SOMMA TOTALE  ->  "); 
-      lcd.print(somma);
-      lcd.print("META  ->  ");
-      lcd.print(numeroMetaPARTITA); 
-      NumeroTurni++;
+      TurnoGiocatore();
+      ControllaMeta(); 
       CodiceTurno = 1;
-      ControllaMeta();      
   }
   
 }
@@ -108,41 +97,14 @@ void loop()
 
 //////////////////AREA METODI/////////////////
 
-void AumentaMeta()
+int TurnoGiocatore() // O COPIA O IF
 {
-  if(numeroMetaPARTITA > 99)
-  {
-    lcd.print("Non superare la soglia massima di 99");
-  }
-  else
-  {
-    numeroMetaScelto++;
-  }
-}
-
-void RiduciMeta()
-{
-  if(numeroMetaPARTITA < 30)
-  {
-    lcd.print("Non superare la soglia minima di 30");
-  }
-  else
-  {
-    numeroMetaScelto--;
-  }
-}
-
-int TurnoGiocatore()
-{
-  blocco = 0;
-  lcd.print("Scegliere una cifra da 0 a 6");
-  while (bottoneConferma == false)
-  {
-      String InputGiocatore = digitalre();
-      if(InputGiocatore == "")
-      {}
-      else
-      {
+  lcd.print("Scegliere cifra da 0 a 6");
+  Aspetta();
+  BottoniPremutiGiocatore();
+  
+     //CONTROLLO + SOMMA
+      
         if (InputGiocatore.toInt() >= 1 && InputGiocatore.toInt() <= 6) 
         {
         numeroSceltoGiocatore = InputGiocatore.toInt();
@@ -187,45 +149,125 @@ int TurnoGiocatore()
 
 int InizioPartita()
 {
-  lcd.print("Meta da 30 a 99");
-  while (lcd.available() == 0) 
-  {
-    String InputMeta = lcd.read();
-
-    if(InputMeta == "")
-    {}
-    else
-    {
-      if (InputMeta.toInt() >= 30 && InputMeta.toInt() <= 99) 
-      {
-        numeroMetaPARTITA = InputMeta.toInt();
-        lcd.print("Punti Meta  :  ");
+        lcd.print("Meta da 30 a 99");
+        lcd.setCursor(7,1);//COLONNA,RIGA
         lcd.print(numeroMetaPARTITA);
+        BottoniPremutiMeta();
         return numeroMetaPARTITA;
-        blocco = 0;
+
+}
+
+void Aspetta()
+{
+  while(digitalRead(4) == HIGH && digitalRead(3) == HIGH && digitalRead(2) == HIGH)
+  {}
+}
+
+//
+void BottoniPremutiMeta()
+{
+  bool finito = false;
+  if(CodiceTurno == 1)//Player 1
+  {
+    while(!finito)
+  {
+    aspetta();
+    if(digitalRead(4) == LOW)
+    {
+      numeroSceltoGiocatore++;
+      if(numeroSceltoGiocatore > 6)
+      {
+        numeroSceltoGiocatore = 6;
+        lcd.print(numeroSceltoGiocatore);
       }
-      else if(InputMeta.toInt() > 99)
+    }
+    if(digitalRead(3) == LOW)
+    {
+      finito = true;
+      somma = somma + numeroSceltoGiocatore;
+      lcd.print(numeroSceltoGiocatore);
+    }
+    if(digitalRead(2) == LOW)
+    {
+      numeroSceltoGiocatore++;
+      if(numeroSceltoGiocatore < 1)
+      {
+        numeroSceltoGiocatore = 1;
+        lcd.print(numeroSceltoGiocatore);
+      }
+    }
+   }
+  }
+  else if(CodiceTurno == 2)//Player 2
+  {
+    while(!finito)
+  {
+    aspetta();
+    if(digitalRead(4) == LOW)
+    {
+      numeroSceltoSecondo++;
+      if(numeroSceltoSecondo > 6)
+      {
+        numeroSceltoSecondo = 6;
+        lcd.print(numeroSceltoSecondo);
+      }
+    }
+    if(digitalRead(3) == LOW)
+    {
+      finito = true;
+      somma = somma + numeroSceltoSecondo;
+      lcd.print(numeroSceltoSecondo);
+    }
+    if(digitalRead(2) == LOW)
+    {
+      numeroSceltoSecondo++;
+      if(numeroSceltoSecondo < 1)
+      {
+        numeroSceltoSecondo = 1;
+        lcd.print(numeroSceltoSecondo);
+      }
+    }
+   }
+  }
+
+void BottoniPremutiGiocatore()
+{
+  bool finito = false;
+  if(CodiceTurno == 1) //Giocatore 1
+  while(!finito)
+  {
+    Aspetta();
+    if(digitalRead(4) == LOW)
+    {
+      if(numeroMetaPARTITA > 99)
       {
         lcd.print("Soglia troppo alta");
       }
-      else if(InputMeta.toInt() < 30)
+      else
+      {
+        numeroMetaPARTITA++;
+        lcd.print(numeroMetaPARTITA);
+      }
+    }
+    if(digitalRead(3) == LOW)
+    {
+      finito = true;
+      lcd.print(numeroMetaPARTITA);
+    }
+    if(digitalRead(2) == LOW)
+    {
+      if(numeroMetaPARTITA < 30)
       {
         lcd.print("Non oltrepassare la soglia minima consigliata di 30");
       }
-      else    //if(InputMeta == "") + altri caratteri
+      else
       {
-        lcd.print("Immettere un valore in cifre tra 30 e 99. Non altri caratteri.");
+        numeroMetaPARTITA--;
+        lcd.print(numeroMetaPARTITA);
       }
-  }
+    }
   }
 }
-  
-/*
-  else
-  {
-    return numeroMetaPARTITA;
-  }
-*/
 
 
 

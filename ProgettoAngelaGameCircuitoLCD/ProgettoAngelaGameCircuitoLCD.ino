@@ -67,7 +67,10 @@ void loop()
   
   if(CodiceTurno == 0 && somma <= numeroMetaPARTITA && blocco == 0)
   {
-    lcd.print("AngelaGame inizializzato");
+    lcd.clear();
+    lcd.setCursor(0,0);
+    lcd.print("AngelaGame");
+    delay(1000);
     lcd.clear();      
     blocco = 1;
     InizioPartita();
@@ -76,9 +79,12 @@ void loop()
   CodiceTurno = 1;
   lcd.setCursor(0,0);
   lcd.print("Turno dell'Utente");
+  delay(1000);
+  lcd.clear();
   
-  if(CodiceTurno == 1 || blocco == 0)
+  if(CodiceTurno == 1)
   {
+    
     TurnoGiocatore();
     ControllaMeta(); 
     CodiceTurno = 2;
@@ -99,59 +105,23 @@ void loop()
 
 int TurnoGiocatore() // O COPIA O IF
 {
-  lcd.print("Scegliere cifra da 0 a 6");
-  Aspetta();
+  lcd.setCursor(0,0);
+  lcd.print("Da 0 a 6");
+  delay(1000);
+  lcd.clear();
   BottoniPremutiGiocatore();
-  
-     //CONTROLLO + SOMMA
-      
-        if (InputGiocatore.toInt() >= 1 && InputGiocatore.toInt() <= 6) 
-        {
-        numeroSceltoGiocatore = InputGiocatore.toInt();
-        lcd.print("Numero scelto  ->  ");
-        lcd.print(numeroSceltoGiocatore);   
-        somma = somma + numeroSceltoGiocatore;
-        lcd.print("SOMMA TOTALE  ->  "); 
-        lcd.print(somma);
-        lcd.print("META  ->  ");
-        lcd.print(numeroMetaPARTITA);         
-        return numeroSceltoGiocatore;
-        ControllaMeta();        
+        ControllaMeta();   
         CodiceTurno = 2;
         NumeroTurni++;
-      
-        }
-        else if(InputGiocatore.toInt() == 0 && blocco == 0)
-        {
-          blocco = 1;
-          lcd.print("Il numero 0 si può applicare solo un volta il PRIMO turno");
-          numeroSceltoGiocatore = InputGiocatore.toInt();
-          lcd.print("Numero scelto  ->  ");
-          lcd.print(numeroSceltoGiocatore);       
-          somma = somma + numeroSceltoGiocatore; 
-          lcd.print("SOMMA TOTALE  ->  "); 
-          lcd.print(somma);
-          lcd.print("META  ->  ");
-          lcd.print(numeroMetaPARTITA);
-          ControllaMeta();          
-          CodiceTurno = 2;
-          NumeroTurni++;
-          return numeroSceltoGiocatore;
-
-        }
-        else
-        {
-          lcd.print("Selezionare un numero tra 0 per il primo turno,oppure tra 1 e 6");
-        }
-      }
-   }
 }
-
 int InizioPartita()
 {
+        lcd.setCursor(0,0);
         lcd.print("Meta da 30 a 99");
+        delay(1000);
         lcd.setCursor(7,1);//COLONNA,RIGA
         lcd.print(numeroMetaPARTITA);
+        delay(1000);
         BottoniPremutiMeta();
         return numeroMetaPARTITA;
 
@@ -159,40 +129,87 @@ int InizioPartita()
 
 void Aspetta()
 {
-  while(digitalRead(4) == HIGH && digitalRead(3) == HIGH && digitalRead(2) == HIGH)
+  bool fermo = true;
+  while(digitalRead(4) == HIGH && digitalRead(3) == HIGH && digitalRead(2) == HIGH && fermo == true)
   {}
+  if(digitalRead(4) == LOW)
+  {fermo = false;}
+  else if(digitalRead(5) == LOW)
+  {fermo = false;}
+  else if(digitalRead(6) == LOW)
+  {fermo = false;}
 }
 
 //
 void BottoniPremutiMeta()
 {
   bool finito = false;
+  while(!finito)
+  {
+    Aspetta();
+    if(digitalRead(4) == LOW)
+    {
+        numeroMetaPARTITA++;
+        lcd.setCursor(7,1);
+        lcd.print(numeroMetaPARTITA);
+    }
+    if(digitalRead(3) == LOW)
+    {
+      finito = true;
+      lcd.setCursor(7,1);
+      lcd.print(numeroMetaPARTITA);
+
+    }
+    if(digitalRead(2) == LOW)
+    {
+        numeroMetaPARTITA--;
+        lcd.setCursor(7,1);
+        lcd.print(numeroMetaPARTITA);
+    }
+  }
+}
+
+void BottoniPremutiGiocatore()
+{
+  bool finito = false;
   if(CodiceTurno == 1)//Player 1
   {
     while(!finito)
   {
-    aspetta();
+    Aspetta();
     if(digitalRead(4) == LOW)
     {
+      digitalWrite(7, HIGH);
+      delay(1000);
+      digitalWrite(7, LOW);
       numeroSceltoGiocatore++;
       if(numeroSceltoGiocatore > 6)
       {
         numeroSceltoGiocatore = 6;
+        lcd.setCursor(7,1);
         lcd.print(numeroSceltoGiocatore);
       }
     }
     if(digitalRead(3) == LOW)
     {
+      digitalWrite(6, HIGH);
+      delay(1000);
+      digitalWrite(6, LOW);
       finito = true;
       somma = somma + numeroSceltoGiocatore;
+      lcd.setCursor(7,1);
       lcd.print(numeroSceltoGiocatore);
     }
     if(digitalRead(2) == LOW)
     {
+      digitalWrite(5, HIGH);
+      delay(1000);
+      digitalWrite(5, LOW);
       numeroSceltoGiocatore++;
       if(numeroSceltoGiocatore < 1)
       {
         numeroSceltoGiocatore = 1;
+        lcd.setCursor(7,1);
         lcd.print(numeroSceltoGiocatore);
       }
     }
@@ -202,21 +219,25 @@ void BottoniPremutiMeta()
   {
     while(!finito)
   {
-    aspetta();
+    Aspetta();
     if(digitalRead(4) == LOW)
     {
       numeroSceltoSecondo++;
       if(numeroSceltoSecondo > 6)
       {
         numeroSceltoSecondo = 6;
+        lcd.setCursor(7,1);
         lcd.print(numeroSceltoSecondo);
+        delay(1000);
       }
     }
     if(digitalRead(3) == LOW)
     {
       finito = true;
       somma = somma + numeroSceltoSecondo;
+      lcd.setCursor(7,1);
       lcd.print(numeroSceltoSecondo);
+      delay(1000);
     }
     if(digitalRead(2) == LOW)
     {
@@ -224,54 +245,18 @@ void BottoniPremutiMeta()
       if(numeroSceltoSecondo < 1)
       {
         numeroSceltoSecondo = 1;
+        lcd.setCursor(7,1);
         lcd.print(numeroSceltoSecondo);
+        delay(1000);
       }
     }
    }
-  }
-
-void BottoniPremutiGiocatore()
-{
-  bool finito = false;
-  if(CodiceTurno == 1) //Giocatore 1
-  while(!finito)
-  {
-    Aspetta();
-    if(digitalRead(4) == LOW)
-    {
-      if(numeroMetaPARTITA > 99)
-      {
-        lcd.print("Soglia troppo alta");
-      }
-      else
-      {
-        numeroMetaPARTITA++;
-        lcd.print(numeroMetaPARTITA);
-      }
-    }
-    if(digitalRead(3) == LOW)
-    {
-      finito = true;
-      lcd.print(numeroMetaPARTITA);
-    }
-    if(digitalRead(2) == LOW)
-    {
-      if(numeroMetaPARTITA < 30)
-      {
-        lcd.print("Non oltrepassare la soglia minima consigliata di 30");
-      }
-      else
-      {
-        numeroMetaPARTITA--;
-        lcd.print(numeroMetaPARTITA);
-      }
-    }
   }
 }
 
 
 
-
+/*
 void ControlloInput() 
 {
   if (numeroSceltoGiocatore == 1 && numeroSceltoAngela != 6 && numeroSceltoAngela != 1) 
@@ -299,40 +284,52 @@ void ControlloInput()
     controllo = 1;
   }
 }
-
+*/
 void ControllaMeta()
 {
   if(somma > numeroMetaPARTITA && CodiceTurno == 1)
   {
-    lcd.print("Hai Perso - La meta è stata oltrepassata dall'Utente");
+    lcd.clear();
+    lcd.setCursor(0,0);
+    lcd.print("G2 Vince! Turno: " + NumeroTurni);
+    lcd.setCursor(0,1);
+    lcd.print("G1 oltre la meta...");
     numeroMetaPARTITA = 0;
     CodiceTurno = 0;
     blocco = 0;
   }
   else if(somma > numeroMetaPARTITA && CodiceTurno == 2)
   {
-    lcd.print("Hai Vinto - La meta è stata oltrepassata da Angela");
+    lcd.clear();
+    lcd.setCursor(0,0);
+    lcd.print("G1 Vince! Turno: " + NumeroTurni);
+    lcd.setCursor(0,1);
+    lcd.print("G2 oltre la meta...");
     numeroMetaPARTITA = 0;
     CodiceTurno = 0;
     blocco = 0;
   }
   else if(somma == numeroMetaPARTITA && CodiceTurno == 1)
   {
-    lcd.print("Hai Vinto - Hai raggiunto la meta prima di Angela");
+    lcd.clear();
+    lcd.setCursor(0,0);
+    lcd.print("G1 Vince! Turno: " + NumeroTurni);
+    lcd.setCursor(0,1);
+    lcd.print("G1 nella meta!");
     numeroMetaPARTITA = 0;
     CodiceTurno = 0;
     blocco = 0;
   }
     else if(somma == numeroMetaPARTITA && CodiceTurno == 2)
   {
-    lcd.print("Hai Perso - Angela ha ragginto la meta per prima");
+    lcd.clear();
+    lcd.setCursor(0,0);
+    lcd.print("G2 Vince! Turno: " + NumeroTurni);
+    lcd.setCursor(0,1);
+    lcd.print("G2 nella meta!");
     numeroMetaPARTITA = 0;
     CodiceTurno = 0;
     blocco = 0;
-  }
-  else
-  {
-    
   }
 
 }

@@ -7,12 +7,24 @@
   int somma;
   int CodiceTurno;
   int NumeroTurni;
+<<<<<<< HEAD
   int controllo;
   int blocco;
+=======
+  int Turni;
+
+  #define buttonMinus
+  #define buttonOk
+  #define buttonPlus
+  #define ledMinus
+  #define ledOk
+  #define ledPlus
+>>>>>>> master
 
   const int rs = 8, en = 9, d4 = 10, d5 = 11, d6 = 12, d7 = 13;
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 
+<<<<<<< HEAD
 // "Firme" dei metodi
 
 void AumentaMeta();
@@ -40,6 +52,24 @@ void setup()
     randomSeed(analogRead(0));
     blocco = 0;
   
+=======
+  Serial.begin(9600);
+  int numeroMetaScelto = 50;
+  int numeroMetaPARTITA;
+  int numeroSceltoGiocatore;
+  int numeroSceltoAngela;
+  int somma;
+  int CodiceTurno = 1;
+  int NumeroTurni = 1;
+  int Turni = 1;
+  randomSeed(analogRead(0));
+
+    // set up the LCD's number of columns and rows:
+  lcd.begin(16, 2);
+  // Print a message to the LCD.
+  lcd.print("hello, world!");
+  Serial.print("Programma di svago -Angela Game- inizializzato");
+>>>>>>> master
 }
 
 void loop() 
@@ -96,6 +126,18 @@ void AumentaMeta()
   else
   {
     numeroMetaScelto++;
+  }
+}
+
+void PassaTurno()
+{
+  if(CodiceTurno == 1)
+  {
+    CodiceTurno = 2;
+  }
+  else if(CodiceTurno == 2)
+  {
+    CodiceTurno = 1;
   }
 }
 
